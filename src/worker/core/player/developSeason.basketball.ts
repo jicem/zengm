@@ -27,7 +27,14 @@ const shootingFormula: RatingFormula = {
 
 		return 2;
 	},
-	changeLimits: () => [-3, 13],
+	changeLimits: age => {
+		if (age > 19) {
+			return [-3, 13];
+		}
+
+		// For 19: [2, 11]
+		return [2, 11 + 5 * (19 - age)];
+	},
 };
 const iqFormula: RatingFormula = {
 	ageModifier: (age: number) => {
@@ -55,13 +62,12 @@ const iqFormula: RatingFormula = {
 		return 2;
 	},
 	changeLimits: age => {
-		if (age >= 24) {
+		if (age > 19) {
 			return [-3, 9];
 		}
 
-		// For 19: [-3, 32]
-		// For 23: [-3, 12]
-		return [-3, 7 + 5 * (24 - age)];
+		// For 19: [2, 7]
+		return [2, 7 + 5 * (19 - age)];
 	},
 };
 const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
@@ -89,7 +95,13 @@ const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
 
 			return -8;
 		},
-		changeLimits: () => [-12, 2],
+		changeLimits: age => {
+			if (age > 19) {
+				return [-12, 2];
+			}
+
+			return [0, 5];
+		},
 	},
 	jmp: {
 		ageModifier: (age: number) => {
@@ -111,7 +123,13 @@ const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
 
 			return -10;
 		},
-		changeLimits: () => [-12, 2],
+		changeLimits: age => {
+			if (age > 19) {
+				return [-12, 2];
+			}
+
+			return [0, 5];
+		},
 	},
 	endu: {
 		ageModifier: (age: number) => {
@@ -133,7 +151,13 @@ const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
 
 			return -8;
 		},
-		changeLimits: () => [-11, 19],
+		changeLimits: age => {
+			if (age > 19) {
+				return [-11, 19];
+			}
+
+			return [3, 19];
+		},
 	},
 	dnk: {
 		ageModifier: (age: number) => {
@@ -144,7 +168,13 @@ const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
 
 			return 0.5;
 		},
-		changeLimits: () => [-3, 13],
+		changeLimits: age => {
+			if (age > 19) {
+				return [-3, 13];
+			}
+
+			return [2, 11 + 5 * (19 - age)];
+		},
 	},
 	ins: shootingFormula,
 	ft: shootingFormula,
@@ -154,15 +184,33 @@ const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
 	diq: iqFormula,
 	drb: {
 		ageModifier: shootingFormula.ageModifier,
-		changeLimits: () => [-2, 5],
+		changeLimits: age => {
+			if (age > 19) {
+				return [-2, 5];
+			}
+
+			return [2, 10];
+		},
 	},
 	pss: {
 		ageModifier: shootingFormula.ageModifier,
-		changeLimits: () => [-2, 5],
+		changeLimits: age => {
+			if (age > 19) {
+				return [-2, 5];
+			}
+
+			return [2, 10];
+		},
 	},
 	reb: {
 		ageModifier: shootingFormula.ageModifier,
-		changeLimits: () => [-2, 5],
+		changeLimits: age => {
+			if (age > 19) {
+				return [-2, 5];
+			}
+
+			return [2, 10];
+		},
 	},
 };
 
@@ -223,11 +271,11 @@ const developSeason = (
 		const heightRand = Math.random();
 
 		if (heightRand > 0.99 && age <= 20 && ratings.hgt <= 99) {
-			ratings.hgt += 1;
+			ratings.hgt += 3;
 		}
 
 		if (heightRand > 0.999 && ratings.hgt <= 99) {
-			ratings.hgt += 1;
+			ratings.hgt += 2;
 		}
 	}
 
