@@ -1,7 +1,6 @@
-import PropTypes from "prop-types";
 import { Modal } from "react-bootstrap";
 import { GAME_NAME, WEBSITE_ROOT } from "../../common";
-import { animation } from "../views/Settings/Injuries";
+import { animation } from "../views/Settings/RowsEditor";
 import GameLinks from "./GameLinks";
 
 type Props = {
@@ -113,11 +112,6 @@ const NagModal = ({ close, show }: Props) => {
 			)}
 		</Modal>
 	);
-};
-
-NagModal.propTypes = {
-	close: PropTypes.func.isRequired,
-	show: PropTypes.bool.isRequired,
 };
 
 export default NagModal;

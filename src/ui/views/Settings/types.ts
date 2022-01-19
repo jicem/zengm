@@ -19,7 +19,7 @@ export type Key =
 	| "maxContract"
 	| "minContractLength"
 	| "maxContractLength"
-	| "hardCap"
+	| "salaryCapType"
 	| "budget"
 	| "aiTradesFactor"
 	| "playersRefuseToNegotiate"
@@ -91,7 +91,12 @@ export type Key =
 	| "playIn"
 	| "numPlayersDunk"
 	| "numPlayersThree"
-	| "fantasyPoints";
+	| "fantasyPoints"
+	| "tragicDeaths"
+	| "goatFormula"
+	| "draftPickAutoContract"
+	| "draftPickAutoContractPercent"
+	| "draftPickAutoContractRounds";
 
 export type Category =
 	| "New League"
@@ -104,6 +109,7 @@ export type Category =
 	| "Finances"
 	| "Inflation"
 	| "Contracts"
+	| "Rookie Contracts"
 	| "Events"
 	| "Injuries"
 	| "Game Simulation"

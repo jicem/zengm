@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { DataTable, SafeHtml, SkillsBlock } from "../../components";
 import Injuries from "./Injuries";
@@ -174,15 +173,6 @@ const StatsTable = ({
 	);
 };
 
-StatsTable.propTypes = {
-	name: PropTypes.string.isRequired,
-	onlyShowIf: PropTypes.arrayOf(PropTypes.string),
-	p: PropTypes.object.isRequired,
-	playoffs: PropTypes.bool,
-	stats: PropTypes.arrayOf(PropTypes.string).isRequired,
-	superCols: PropTypes.array,
-};
-
 const Player2 = ({
 	currentSeason,
 	customMenu,
@@ -344,7 +334,7 @@ const Player2 = ({
 				<div className="col-6 col-md-3">
 					<h2>Awards</h2>
 					{awardsGrouped.length > 0 ? (
-						<table className="table table-nonfluid table-striped table-bordered table-sm player-awards">
+						<table className="table table-nonfluid table-sm player-awards">
 							<tbody>
 								{awardsGrouped.map((a, i) => {
 									return (
@@ -432,39 +422,6 @@ const Player2 = ({
 			</div>
 		</>
 	);
-};
-
-Player2.propTypes = {
-	events: PropTypes.arrayOf(
-		PropTypes.shape({
-			eid: PropTypes.number.isRequired,
-			season: PropTypes.number.isRequired,
-			text: PropTypes.string.isRequired,
-		}),
-	).isRequired,
-	feats: PropTypes.arrayOf(
-		PropTypes.shape({
-			eid: PropTypes.number.isRequired,
-			season: PropTypes.number.isRequired,
-			text: PropTypes.string.isRequired,
-		}),
-	).isRequired,
-	freeAgent: PropTypes.bool.isRequired,
-	godMode: PropTypes.bool.isRequired,
-	injured: PropTypes.bool.isRequired,
-	player: PropTypes.object.isRequired,
-	ratings: PropTypes.arrayOf(PropTypes.string).isRequired,
-	retired: PropTypes.bool.isRequired,
-	showContract: PropTypes.bool.isRequired,
-	showTradeFor: PropTypes.bool.isRequired,
-	statTables: PropTypes.arrayOf(
-		PropTypes.shape({
-			name: PropTypes.string.isRequired,
-			stats: PropTypes.arrayOf(PropTypes.string).isRequired,
-		}),
-	).isRequired,
-	teamColors: PropTypes.arrayOf(PropTypes.string),
-	willingToSign: PropTypes.bool.isRequired,
 };
 
 export default Player2;

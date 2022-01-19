@@ -47,6 +47,7 @@ const defaultGameAttributes: GameAttributesLeagueWithHistory = {
 	nextPhase: undefined, // Used only for fantasy draft
 	playerBioInfo: undefined,
 	injuries: undefined,
+	tragicDeaths: undefined,
 	daysLeft: 0, // Used only for free agency
 	gameOver: false,
 	godMode: false,
@@ -85,7 +86,7 @@ const defaultGameAttributes: GameAttributesLeagueWithHistory = {
 	brotherRate: 0.02,
 	forceRetireAge: 0,
 
-	hardCap: false,
+	salaryCapType: "soft",
 
 	// This enables ties in the UI and game data saving, but GameSim still needs to actually return ties. In other words... you can't just enable this for basketball and have ties happen in basketball!
 	ties: wrap(false),
@@ -163,6 +164,9 @@ const defaultGameAttributes: GameAttributesLeagueWithHistory = {
 	playIn: true,
 	numPlayersDunk: 4,
 	numPlayersThree: 8,
+	draftPickAutoContract: true,
+	draftPickAutoContractPercent: 25,
+	draftPickAutoContractRounds: 1,
 
 	// These will always be overwritten when creating a league, just here for TypeScript
 	lid: 0,
@@ -195,7 +199,7 @@ export const footballOverrides: Partial<GameAttributesLeagueWithHistory> =
 				numGamesPlayoffSeries: wrap([1, 1, 1, 1]),
 				numPlayoffByes: wrap(2),
 				stopOnInjuryGames: 1,
-				hardCap: true,
+				salaryCapType: "hard",
 				ties: wrap(true),
 				draftType: "noLottery",
 				numDraftRounds: 7,
@@ -228,6 +232,7 @@ export const footballOverrides: Partial<GameAttributesLeagueWithHistory> =
 				playoffsNumTeamsDiv: wrap(1),
 				playIn: false,
 				fantasyPoints: "standard",
+				draftPickAutoContract: false,
 		  }
 		: {};
 
@@ -238,7 +243,7 @@ export const hockeyOverrides: Partial<GameAttributesLeagueWithHistory> =
 				numGamesConf: 24,
 				quarterLength: 20,
 				numPeriods: 3,
-				hardCap: true,
+				salaryCapType: "hard",
 				salaryCap: 80000,
 				minPayroll: 60000,
 				minContract: 500,
@@ -256,6 +261,9 @@ export const hockeyOverrides: Partial<GameAttributesLeagueWithHistory> =
 				pointsFormula: wrap(DEFAULT_POINTS_FORMULA),
 				playoffsNumTeamsDiv: wrap(3),
 				playIn: false,
+				draftPickAutoContractPercent: 10,
+				draftPickAutoContractRounds: 2,
+				rookieContractLengths: [3],
 		  }
 		: {};
 

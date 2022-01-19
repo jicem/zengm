@@ -1,8 +1,7 @@
-import PropTypes from "prop-types";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { PHASE } from "../../../common";
 import useTitleBar from "../../hooks/useTitleBar";
-import { helpers, toWorker } from "../../util";
+import { helpers, toWorker, useLocal } from "../../util";
 import AssetList from "./AssetList";
 import Buttons from "./Buttons";
 import type { TradeClearType } from "./Buttons";
@@ -234,6 +233,7 @@ const Trade = (props: View<"trade">) => {
 		otl,
 		phase,
 		salaryCap,
+		salaryCapType,
 		summary,
 		showResigningMsg,
 		stats,
@@ -253,19 +253,26 @@ const Trade = (props: View<"trade">) => {
 	const summaryText = useRef<HTMLDivElement>(null);
 	const summaryControls = useRef<HTMLDivElement>(null);
 
+	const userTids = useLocal(state => state.userTids);
+
 	const updateSummaryHeight = useCallback(() => {
 		if (summaryControls.current && summaryText.current) {
 			// Keep in sync with .trade-affix
 			if (window.matchMedia("(min-width:768px)").matches) {
 				// 60 for top navbar, 24 for spacing between asset list and trade controls
-				const newHeight =
+				let newHeight =
 					window.innerHeight - 60 - 24 - summaryControls.current.clientHeight;
+
+				// Multi team menu
+				if (userTids.length > 1) {
+					newHeight -= 40;
+				}
 				summaryText.current.style.maxHeight = `${newHeight}px`;
 			} else if (summaryText.current.style.maxHeight !== "") {
 				summaryText.current.style.removeProperty("height");
 			}
 		}
-	}, []);
+	}, [userTids]);
 
 	// Run every render, in case it changes
 	useEffect(() => {
@@ -393,6 +400,7 @@ const Trade = (props: View<"trade">) => {
 						<Summary
 							ref={summaryText}
 							salaryCap={salaryCap}
+							salaryCapType={salaryCapType}
 							summary={summary}
 						/>
 
@@ -492,42 +500,6 @@ const Trade = (props: View<"trade">) => {
 			</div>
 		</>
 	);
-};
-
-Trade.propTypes = {
-	gameOver: PropTypes.bool.isRequired,
-	godMode: PropTypes.bool.isRequired,
-	lost: PropTypes.number.isRequired,
-	otherDpids: PropTypes.arrayOf(PropTypes.number).isRequired,
-	otherDpidsExcluded: PropTypes.arrayOf(PropTypes.number).isRequired,
-	otherPicks: PropTypes.array.isRequired,
-	otherPids: PropTypes.arrayOf(PropTypes.number).isRequired,
-	otherPidsExcluded: PropTypes.arrayOf(PropTypes.number).isRequired,
-	otherRoster: PropTypes.array.isRequired,
-	otherTid: PropTypes.number.isRequired,
-	phase: PropTypes.number.isRequired,
-	salaryCap: PropTypes.number.isRequired,
-	summary: PropTypes.object.isRequired,
-	showResigningMsg: PropTypes.bool.isRequired,
-	stats: PropTypes.arrayOf(PropTypes.string).isRequired,
-	strategy: PropTypes.string.isRequired,
-	teams: PropTypes.arrayOf(
-		PropTypes.shape({
-			name: PropTypes.string.isRequired,
-			region: PropTypes.string.isRequired,
-			tid: PropTypes.number.isRequired,
-		}),
-	).isRequired,
-	tied: PropTypes.number,
-	userDpids: PropTypes.arrayOf(PropTypes.number).isRequired,
-	userDpidsExcluded: PropTypes.arrayOf(PropTypes.number).isRequired,
-	userPicks: PropTypes.array.isRequired,
-	userPids: PropTypes.arrayOf(PropTypes.number).isRequired,
-	userPidsExcluded: PropTypes.arrayOf(PropTypes.number).isRequired,
-	userRoster: PropTypes.array.isRequired,
-	userTid: PropTypes.number.isRequired,
-	userTeamName: PropTypes.string.isRequired,
-	won: PropTypes.number.isRequired,
 };
 
 export default Trade;

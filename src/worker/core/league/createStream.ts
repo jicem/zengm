@@ -235,12 +235,8 @@ const preProcess = async (
 			}
 		}
 
-		// Impute rookie contract status if there is no contract for this player, or if the entire league file has no rookie contracts
-		if (
-			p.tid >= 0 &&
-			!g.get("hardCap") &&
-			(!x.contract || !hasRookieContracts)
-		) {
+		// Impute rookie contract status if there is no contract for this player, or if the entire league file has no rookie contracts. Don't check draftPickAutoContract here because we want all rookie contracts to be labeled as such, not just rookie scale contracts.
+		if (p.tid >= 0 && (!x.contract || !hasRookieContracts)) {
 			const rookieContractLength = draft.getRookieContractLength(p.draft.round);
 			const rookieContractExp = p.draft.year + rookieContractLength;
 
@@ -803,7 +799,9 @@ const finalizeActivePlayers = async ({
 	const players = await idb.cache.players.getAll();
 
 	// Adjustment for hard cap - lower contracts for teams above cap
-	if (!fileHasPlayers && g.get("hardCap")) {
+	if (!fileHasPlayers && g.get("salaryCapType") === "hard") {
+		const minContract = g.get("minContract");
+
 		const teams = await idb.cache.teams.getAll();
 		for (const t of teams) {
 			if (t.disabled) {
@@ -816,16 +814,20 @@ const finalizeActivePlayers = async ({
 				let foundAny = false;
 
 				for (const p of roster) {
-					if (p.contract.amount >= g.get("minContract") + 50) {
-						p.contract.amount -= 50;
-						payroll -= 50;
+					if (p.contract.amount >= minContract + 10) {
+						payroll -= 10;
+						p.contract.amount -= 10;
+						foundAny = true;
+					} else if (p.contract.amount > minContract) {
+						payroll -= p.contract.amount - minContract;
+						p.contract.amount = minContract;
 						foundAny = true;
 					}
 				}
 
 				if (!foundAny) {
 					throw new Error(
-						"Invalid combination of hardCap, salaryCap, and minContract",
+						"Invalid combination of salaryCapType, salaryCap, and minContract - a team full of min contract players is still over the hard cap",
 					);
 				}
 			}

@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useRef, useState, ReactNode } from "react";
 import { PHASE } from "../../common";
 import useTitleBar from "../hooks/useTitleBar";
@@ -97,7 +96,7 @@ const Offer = (props: OfferProps) => {
 	if (picks.length > 0) {
 		offerPicks = (
 			<div className="col-md-4">
-				<table className="table table-striped table-bordered table-sm">
+				<table className="table table-sm">
 					<thead>
 						<tr>
 							<th>Draft Picks</th>
@@ -147,26 +146,6 @@ const Offer = (props: OfferProps) => {
 			</button>
 		</div>
 	);
-};
-
-Offer.propTypes = {
-	abbrev: PropTypes.string.isRequired,
-	dpids: PropTypes.arrayOf(PropTypes.number).isRequired,
-	handleClickNegotiate: PropTypes.func.isRequired,
-	i: PropTypes.number.isRequired,
-	lost: PropTypes.number.isRequired,
-	name: PropTypes.string.isRequired,
-	payroll: PropTypes.number.isRequired,
-	picks: PropTypes.arrayOf(PropTypes.object).isRequired,
-	pids: PropTypes.arrayOf(PropTypes.number).isRequired,
-	players: PropTypes.arrayOf(PropTypes.object).isRequired,
-	region: PropTypes.string.isRequired,
-	stats: PropTypes.arrayOf(PropTypes.string).isRequired,
-	strategy: PropTypes.string.isRequired,
-	tid: PropTypes.number.isRequired,
-	tied: PropTypes.number,
-	warning: PropTypes.string,
-	won: PropTypes.number.isRequired,
 };
 
 const pickCols = getCols(["", "Draft Picks"], {
@@ -437,14 +416,6 @@ const TradingBlock = (props: View<"tradingBlock">) => {
 			) : null}
 		</>
 	);
-};
-
-TradingBlock.propTypes = {
-	gameOver: PropTypes.bool.isRequired,
-	phase: PropTypes.number.isRequired,
-	stats: PropTypes.arrayOf(PropTypes.string).isRequired,
-	userPicks: PropTypes.arrayOf(PropTypes.object).isRequired,
-	userRoster: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default TradingBlock;

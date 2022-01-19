@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import range from "lodash-es/range";
-import PropTypes from "prop-types";
 import { useEffect, useReducer, useRef } from "react";
 import {
 	DraftAbbrev,
@@ -227,7 +226,7 @@ const Rigged = ({
 			{actualRigged.map((selected, i) => (
 				<td key={i}>
 					<select
-						className="form-select form-select-sm px-0 god-mode"
+						className="form-select form-select-sm px-1 god-mode"
 						onChange={async event => {
 							const value = parseInt(event.target.value);
 
@@ -397,7 +396,7 @@ const DraftLotteryTable = (props: Props) => {
 			<>
 				<p />
 				<ResponsiveTableWrapper nonfluid>
-					<table className="table table-striped table-bordered table-sm table-hover">
+					<table className="table table-sm table-hover">
 						<thead>
 							<tr>
 								<th colSpan={3} />
@@ -490,23 +489,6 @@ const DraftLotteryTable = (props: Props) => {
 	);
 };
 
-DraftLotteryTable.propTypes = {
-	draftType: PropTypes.string,
-	result: PropTypes.arrayOf(
-		PropTypes.shape({
-			tid: PropTypes.number.isRequired,
-			originalTid: PropTypes.number.isRequired,
-			chances: PropTypes.number.isRequired,
-			pick: PropTypes.number,
-			won: PropTypes.number.isRequired,
-			lost: PropTypes.number.isRequired,
-		}),
-	),
-	season: PropTypes.number.isRequired,
-	type: PropTypes.string.isRequired,
-	userTid: PropTypes.number.isRequired,
-};
-
 const DraftLottery = (props: Props) => {
 	useTitleBar({
 		title: "Draft Lottery",
@@ -545,7 +527,5 @@ const DraftLottery = (props: Props) => {
 		</>
 	);
 };
-
-DraftLottery.propTypes = DraftLotteryTable.propTypes;
 
 export default DraftLottery;

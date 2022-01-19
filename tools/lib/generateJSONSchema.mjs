@@ -625,6 +625,17 @@ const generateJSONSchema = (sport /*: string*/) => {
 								minItems: 2,
 								maxItems: 2,
 							},
+							draftPickAutoContract: {
+								type: "boolean",
+							},
+							draftPickAutoContractPercent: {
+								type: "number",
+								minimum: 0,
+							},
+							draftPickAutoContractRounds: {
+								type: "integer",
+								minimum: 0,
+							},
 							draftType: {
 								type: "string",
 								// nba is legacy
@@ -692,9 +703,6 @@ const generateJSONSchema = (sport /*: string*/) => {
 							},
 							gracePeriodEnd: {
 								type: "integer",
-							},
-							hardCap: {
-								type: "boolean",
 							},
 							hideDisabledTeams: {
 								type: "boolean",
@@ -967,6 +975,10 @@ const generateJSONSchema = (sport /*: string*/) => {
 								type: "integer",
 								minimum: 0,
 							},
+							salaryCapType: {
+								type: "string",
+								enum: ["hard", "none", "soft"],
+							},
 							season: {
 								type: "integer",
 							},
@@ -1005,6 +1017,21 @@ const generateJSONSchema = (sport /*: string*/) => {
 							tragicDeathRate: {
 								type: "number",
 								minimum: 0,
+							},
+							tragicDeaths: {
+								type: "array",
+								items: {
+									type: "object",
+									properties: {
+										reason: {
+											type: "string",
+										},
+										frequency: {
+											type: "number",
+										},
+									},
+									required: ["reason", "frequency"],
+								},
 							},
 							userTid: wrap({
 								type: "integer",

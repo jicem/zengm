@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { csvFormatRows } from "d3-dsv";
 import orderBy from "lodash-es/orderBy";
-import PropTypes from "prop-types";
 import {
 	SyntheticEvent,
 	MouseEvent,
@@ -64,8 +63,8 @@ export type DataTableRow = {
 };
 
 export type Props = {
-	bordered?: boolean;
 	className?: string;
+	clickable?: boolean;
 	cols: Col[];
 	defaultSort: SortBy;
 	disableSettingsCache?: boolean;
@@ -77,7 +76,6 @@ export type Props = {
 	rankCol?: number;
 	rows: DataTableRow[];
 	small?: boolean;
-	striped?: boolean;
 	superCols?: SuperCol[];
 	addFilters?: (string | undefined)[];
 };
@@ -99,8 +97,8 @@ export type State = {
 };
 
 const DataTable = ({
-	bordered,
 	className,
+	clickable = true,
 	cols,
 	defaultSort,
 	disableSettingsCache,
@@ -112,7 +110,6 @@ const DataTable = ({
 	rankCol,
 	rows,
 	small,
-	striped,
 	superCols,
 	addFilters,
 }: Props) => {
@@ -233,13 +230,18 @@ const DataTable = ({
 		const colOrderFiltered = state.colOrder.filter(
 			({ hidden, colIndex }) => !hidden && cols[colIndex],
 		);
-		const columns = colOrderFiltered.map(
-			({ colIndex }) => cols[colIndex].title,
-		);
+		const columns = colOrderFiltered.map(({ colIndex }) => cols[colIndex]);
+		const colNames = columns.map(col => col.title);
 		const rows = processRows().map(row =>
-			row.data.map(val => getSearchVal(val, false)),
+			row.data.map((val, i) => {
+				const sortType = columns[i].sortType;
+				if (sortType === "currency" || sortType === "number") {
+					return getSortVal(val, sortType, true);
+				}
+				return getSearchVal(val, false);
+			}),
 		);
-		const output = csvFormatRows([columns, ...rows]);
+		const output = csvFormatRows([colNames, ...rows]);
 		downloadFile(`${name}.csv`, output, "text/csv");
 	};
 
@@ -463,9 +465,7 @@ const DataTable = ({
 				>
 					<table
 						className={classNames("table table-hover", {
-							"table-bordered": bordered !== false,
 							"table-sm": small !== false,
-							"table-striped": striped !== false,
 						})}
 					>
 						<Header
@@ -480,7 +480,7 @@ const DataTable = ({
 						/>
 						<tbody>
 							{processedRows.map(row => (
-								<Row key={row.key} row={row} />
+								<Row key={row.key} row={row} clickable={clickable} />
 							))}
 						</tbody>
 						<Footer colOrder={colOrderFiltered} footer={footer} />
@@ -510,24 +510,6 @@ const DataTable = ({
 			</div>
 		</>
 	);
-};
-
-DataTable.propTypes = {
-	bordered: PropTypes.bool,
-	className: PropTypes.string,
-	cols: PropTypes.array.isRequired,
-	defaultSort: PropTypes.arrayOf(
-		PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-	).isRequired,
-	disableSettingsCache: PropTypes.bool,
-	footer: PropTypes.array,
-	name: PropTypes.string.isRequired,
-	nonfluid: PropTypes.bool,
-	hideAllControls: PropTypes.bool,
-	pagination: PropTypes.bool,
-	rows: PropTypes.arrayOf(PropTypes.object).isRequired,
-	small: PropTypes.bool,
-	superCols: PropTypes.array,
 };
 
 export default DataTable;

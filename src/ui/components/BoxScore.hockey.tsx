@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { memo, Fragment, MouseEvent, ReactNode, useState } from "react";
 import ResponsiveTableWrapper from "./ResponsiveTableWrapper";
 import { getCols, helpers, processPlayerStats } from "../util";
@@ -93,7 +92,7 @@ const StatsTable = ({
 	return (
 		<div className="mb-3">
 			<ResponsiveTableWrapper>
-				<table className="table table-striped table-bordered table-sm table-hover">
+				<table className="table table-sm table-hover">
 					<thead>
 						<tr>
 							<th colSpan={2}>{title}</th>
@@ -278,12 +277,6 @@ const ScoringSummary = memo(
 	},
 );
 
-// @ts-ignore
-ScoringSummary.propTypes = {
-	events: PropTypes.array.isRequired,
-	teams: PropTypes.array.isRequired,
-};
-
 const BoxScore = ({
 	boxScore,
 	forceRowUpdate,
@@ -323,11 +316,6 @@ const BoxScore = ({
 			))}
 		</div>
 	);
-};
-
-BoxScore.propTypes = {
-	boxScore: PropTypes.object.isRequired,
-	Row: PropTypes.any,
 };
 
 export default BoxScore;

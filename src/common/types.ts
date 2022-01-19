@@ -439,6 +439,11 @@ export type InjuriesSetting = {
 	games: number;
 }[];
 
+export type TragicDeaths = {
+	reason: string;
+	frequency: number;
+}[];
+
 export type GameAttributesLeague = {
 	aiJerseyRetirement: boolean;
 	aiTradesFactor: number;
@@ -460,8 +465,11 @@ export type GameAttributesLeague = {
 	defaultStadiumCapacity: number;
 	difficulty: number;
 	divs: Div[];
-	draftType: DraftType;
 	draftAges: [number, number];
+	draftPickAutoContract: boolean;
+	draftPickAutoContractPercent: number;
+	draftPickAutoContractRounds: number;
+	draftType: DraftType;
 	elam: boolean;
 	elamASG: boolean;
 	elamMinutes: number;
@@ -477,7 +485,6 @@ export type GameAttributesLeague = {
 	godMode: boolean;
 	godModeInPast: boolean;
 	gracePeriodEnd: number;
-	hardCap: boolean;
 	hideDisabledTeams: boolean;
 	hofFactor: number;
 	homeCourtAdvantage: number;
@@ -547,6 +554,7 @@ export type GameAttributesLeague = {
 	rookieContractLengths: number[];
 	rookiesCanRefuse: boolean;
 	salaryCap: number;
+	salaryCapType: "hard" | "none" | "soft";
 	season: number;
 	sonRate: number;
 	startingSeason: number;
@@ -564,6 +572,7 @@ export type GameAttributesLeague = {
 	ties: boolean;
 	tradeDeadline: number;
 	tragicDeathRate: number;
+	tragicDeaths?: TragicDeaths;
 	userTid: number;
 	userTids: number[];
 
@@ -639,9 +648,9 @@ export type GameAttributes =
 
 export type GameAttributeKey = keyof GameAttributesLeague;
 
-export type GameAttribute = {
-	key: GameAttributeKey;
-	value: any;
+export type GameAttribute<T extends GameAttributeKey> = {
+	key: T;
+	value: GameAttributesLeagueWithHistory[T];
 };
 
 export type GameProcessed = {
@@ -665,7 +674,7 @@ export type GameProcessedCompleted = {
 };
 
 export type League = {
-	lid?: number;
+	lid: number;
 	name: string;
 	tid: number;
 	phaseText: string;
@@ -929,7 +938,6 @@ export type LocalStateUI = {
 	moreInfoTid?: number;
 	stickyFooterAd: boolean;
 	stickyFormButtons: boolean;
-	stickyMultiTeamMenu: boolean;
 };
 
 export type PartialTopMenu = {
@@ -950,7 +958,7 @@ export type PhaseReturn = {
 export type PlayerContract = {
 	amount: number;
 	exp: number;
-	rookie?: true;
+	rookie?: true; // If present, this is a rookie contract. Could be either a rookie scale auto sign, or negotiated.
 	rookieResign?: true; // Should only be present during re-signing phase for guys re-signing after rookie contracts, otherwise can't identify if previous contract was a rookie contract cause it's overwritten!
 };
 

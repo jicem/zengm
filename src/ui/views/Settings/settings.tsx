@@ -10,8 +10,8 @@ import {
 } from "../../../common";
 import { toWorker, helpers } from "../../util";
 import type { ReactNode } from "react";
-import type { View } from "../../../common/types";
 import type { Category, Decoration, FieldType, Key, Values } from "./types";
+import type { Settings } from "../../../worker/views/settings";
 
 export const descriptions = {
 	difficulty:
@@ -29,11 +29,15 @@ export const settings: {
 	validator?: (
 		value: any,
 		output: any,
-		props: View<"settings">,
+		initialSettings: Settings,
 	) => void | Promise<void>;
+
+	// For form fields that render one box for two keys, put any of the associated hidden keys here.
+	partners?: Key[];
 
 	// showOnlyIf is for hiding form elements that only make sense in some situations (like when creating a new league). hidden is for a setting where we're merging it with some other setting in the UI (probably with customForm) but still want to track it here so it gets updated properly.
 	showOnlyIf?: (params: {
+		defaultNewLeagueSettings?: boolean;
 		hasPlayers?: boolean;
 		newLeague?: boolean;
 		realPlayers?: boolean;
@@ -114,8 +118,12 @@ export const settings: {
 		key: "randomization",
 		name: "Randomization",
 		godModeRequired: "existingLeagueOnly",
-		showOnlyIf: ({ newLeague, hasPlayers, realPlayers }) =>
-			newLeague && hasPlayers && !realPlayers,
+		showOnlyIf: ({
+			defaultNewLeagueSettings,
+			newLeague,
+			hasPlayers,
+			realPlayers,
+		}) => newLeague && hasPlayers && !realPlayers && !defaultNewLeagueSettings,
 		type: "string",
 		values: [
 			{ key: "none", value: "None" },
@@ -259,7 +267,7 @@ export const settings: {
 			</>
 		),
 		type: "jsonString",
-		validator: async (value, output, props) => {
+		validator: async (value, output, initialSettings) => {
 			if (!Array.isArray(value)) {
 				throw new Error("Must be an array");
 			}
@@ -273,12 +281,12 @@ export const settings: {
 			await toWorker("main", "validatePlayoffSettings", {
 				numRounds,
 				numPlayoffByes: output.numPlayoffByes,
-				numActiveTeams: props.numActiveTeams,
+				numActiveTeams: initialSettings.numActiveTeams,
 				playIn: output.playIn,
 				playoffsByConf: output.playoffsByConf,
 
 				// Fallback is for when creating a new league and editing settings, confs are not available here
-				confs: props.confs ?? DEFAULT_CONFS,
+				confs: initialSettings.confs ?? DEFAULT_CONFS,
 			});
 		},
 	},
@@ -634,15 +642,26 @@ export const settings: {
 	},
 	{
 		category: "Finances",
-		key: "hardCap",
-		name: "Hard Cap",
+		key: "salaryCapType",
+		name: "Salary Cap Type",
 		godModeRequired: "always",
-		type: "bool",
+		type: "string",
+		values: [
+			{ key: "hard", value: "Hard cap" },
+			{ key: "soft", value: "Soft cap" },
+			{ key: "none", value: "None" },
+		],
 		descriptionLong: (
 			<>
 				<p>
-					If this is enabled, then you can not exceed the salary cap to sign
-					draft picks or re-sign players (like the{" "}
+					<b>Hard cap:</b> Team payroll cannot exceed the salary cap, except to
+					sign free agents to minimum contracts which is to guarantee that you
+					never get stuck without enough players. This also disables this luxury
+					tax.
+				</p>
+				<p>
+					<b>Soft cap:</b> Same as hard cap, eccept you can exceed the salary
+					cap to sign draft picks or re-sign players (like the{" "}
 					<a
 						href="https://en.wikipedia.org/wiki/NBA_salary_cap#Larry_Bird_exception"
 						target="_blank"
@@ -650,15 +669,15 @@ export const settings: {
 					>
 						Larry Bird exception
 					</a>
-					) and you can not make trades that result in either team being over
-					the salary cap.
+					) and you can make trades that increase your payroll beyond the salary
+					cap as long as incoming salary is at most 125% of outgoing salary.
 				</p>
 				<p>
-					It is not really a strict hard cap, though. You can still go over the
-					cap to sign free agents to minimum contracts, which is to guarantee
-					that you never get stuck without enough players.
+					<b>None:</b> There is no limit to your payroll. The "Salary Cap"
+					setting is still used internally in many places to determine the
+					overall financial state of the league, but it does not limit your
+					signings or trades.
 				</p>
-				<p>This also disables the luxury tax.</p>
 			</>
 		),
 	},
@@ -777,6 +796,13 @@ export const settings: {
 	},
 	{
 		category: "Events",
+		key: "tragicDeaths",
+		name: "Tragic Death Types",
+		type: "custom",
+		customForm: true,
+	},
+	{
+		category: "Events",
 		key: "brotherRate",
 		name: "Brother Rate",
 		type: "float",
@@ -821,24 +847,41 @@ export const settings: {
 		),
 	},
 	{
-		category: "Contracts",
+		category: "Rookie Contracts",
+		key: "draftPickAutoContract",
+		name: "Rookie Salary Scale",
+		godModeRequired: "existingLeagueOnly",
+		type: "bool",
+	},
+	{
+		category: "Rookie Contracts",
+		key: "draftPickAutoContractPercent",
+		name: "#1 Pick Salary, % of Max Contract",
+		godModeRequired: "existingLeagueOnly",
+		type: "float",
+		decoration: "percent",
+	},
+	{
+		category: "Rookie Contracts",
+		key: "draftPickAutoContractRounds",
+		name: "Rounds With >Min Contracts",
+		godModeRequired: "existingLeagueOnly",
+		type: "int",
+	},
+	{
+		category: "Rookie Contracts",
 		key: "rookieContractLengths",
 		name: "Rookie Contract Lengths",
 		godModeRequired: "always",
 		descriptionLong: (
 			<>
-				<p>
-					Specify the length of rookie contracts. Different rounds can have
-					different lengths. The default is for first round picks to have 3 year
-					contracts and second round picks to have 2 year contracts, which looks
-					like: <code>[3,2]</code>. If you want every rookie contract to have
-					the same length regardless of round, just set one number like{" "}
-					<code>[2]</code> - this works because it uses the last value specified
-					here for any rounds where you don't define contract length.
-				</p>
-				<p>
-					This only applies if the <b>hard cap option is disabled</b>.
-				</p>
+				Specify the length of rookie contracts. Different rounds can have
+				different lengths. The default is for first round picks to have 3 year
+				contracts and second round picks to have 2 year contracts, which looks
+				like: <code>[3,2]</code>. If you want every rookie contract to have the
+				same length regardless of round, just set one number like{" "}
+				<code>[2]</code> - this works because it uses the last value specified
+				here for any rounds where you don't define contract length.
 			</>
 		),
 		type: "jsonString",
@@ -855,30 +898,25 @@ export const settings: {
 	},
 	{
 		category: "Contracts",
-		key: "rookiesCanRefuse",
-		name: "Rookies Can Refuse To Negotiate",
-		godModeRequired: "existingLeagueOnly",
-		descriptionLong: (
-			<>
-				<p>
-					{GAME_NAME} has no concept of "restricted free agency" like the NBA
-					does, so draft picks can refuse to negotiate with you after their
-					rookie contracts expire. This option can force every player to be
-					willing to negotiate when his rookie contract expires, which can
-					somewhat make up for restricted free agency not existing.
-				</p>
-				<p>
-					This only applies if the <b>hard cap option is disabled</b>.
-				</p>
-			</>
-		),
+		key: "playersRefuseToNegotiate",
+		name: "Players Can Refuse To Negotiate",
+		godModeRequired: "always",
 		type: "bool",
 	},
 	{
 		category: "Contracts",
-		key: "playersRefuseToNegotiate",
-		name: "Players Can Refuse To Negotiate",
-		godModeRequired: "always",
+		key: "rookiesCanRefuse",
+		name: "Can Refuse After Rookie Contract",
+		godModeRequired: "existingLeagueOnly",
+		descriptionLong: (
+			<>
+				{GAME_NAME} has no concept of "restricted free agency" like the NBA
+				does, so draft picks can refuse to negotiate with you after their rookie
+				contracts expire. This option can force every player to be willing to
+				negotiate when his rookie contract expires, which can somewhat make up
+				for restricted free agency not existing.
+			</>
+		),
 		type: "bool",
 	},
 	{
@@ -1389,13 +1427,13 @@ settings.push(
 		description:
 			"This will stop game simulation if one of your players is injured for more than N games. In auto play mode (Tools > Auto Play Seasons), this has no effect.",
 		customForm: true,
+		partners: ["stopOnInjury"],
 	},
 	{
 		category: "Injuries",
 		key: "injuries",
 		name: "Injury Types",
 		type: "custom",
-		godModeRequired: "always",
 		customForm: true,
 	},
 	{
@@ -1420,6 +1458,15 @@ settings.push(
 		type: "bool",
 		descriptionLong:
 			"This will hide inactive teams from dropdown menus at the top of many pages, such as the roster page.",
+	},
+	{
+		category: "Players",
+		key: "goatFormula",
+		name: "GOAT Formula",
+		showOnlyIf: ({ defaultNewLeagueSettings }) => defaultNewLeagueSettings,
+		type: "string",
+		description: "See Tools > Frivolities > GOAT Lab for details.",
+		maxWidth: true,
 	},
 );
 

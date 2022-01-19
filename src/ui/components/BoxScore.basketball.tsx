@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import ResponsiveTableWrapper from "./ResponsiveTableWrapper";
 import SafeHtml from "../components/SafeHtml";
 import { getCols, helpers } from "../util";
@@ -127,7 +126,7 @@ const StatsTable = ({
 
 	return (
 		<ResponsiveTableWrapper>
-			<table className="table table-striped table-bordered table-sm table-hover">
+			<table className="table table-sm table-hover">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -263,12 +262,6 @@ const BoxScore = ({
 				: null}
 		</>
 	);
-};
-
-BoxScore.propTypes = {
-	boxScore: PropTypes.object.isRequired,
-	Row: PropTypes.any,
-	forceRowUpdate: PropTypes.bool.isRequired,
 };
 
 export default BoxScore;

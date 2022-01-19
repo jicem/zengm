@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState, CSSProperties } from "react";
 import {
 	RecordAndPlayoffs,
@@ -46,11 +45,6 @@ const TeamRating = ({
 	);
 };
 
-TeamRating.propTypes = {
-	ovr: PropTypes.number.isRequired,
-	ovrCurrent: PropTypes.number.isRequired,
-};
-
 const TopStuff = ({
 	abbrev,
 	budget,
@@ -65,6 +59,7 @@ const TopStuff = ({
 	players,
 	profit,
 	salaryCap,
+	salaryCapType,
 	season,
 	showTradeFor,
 	showTradingBlock,
@@ -83,6 +78,7 @@ const TopStuff = ({
 	| "payroll"
 	| "players"
 	| "salaryCap"
+	| "salaryCapType"
 	| "season"
 	| "showTradeFor"
 	| "showTradingBlock"
@@ -167,8 +163,12 @@ const TopStuff = ({
 								<br />
 								Payroll: {helpers.formatCurrency(payroll || 0, "M")}
 								<br />
-								Salary cap: {helpers.formatCurrency(salaryCap, "M")}
-								<br />
+								{salaryCapType !== "none" ? (
+									<>
+										Salary cap: {helpers.formatCurrency(salaryCap, "M")}
+										<br />
+									</>
+								) : null}
 								{budget ? (
 									<>
 										Profit: {helpers.formatCurrency(profit, "M")}
@@ -210,24 +210,6 @@ const TopStuff = ({
 			) : null}
 		</>
 	);
-};
-
-TopStuff.propTypes = {
-	abbrev: PropTypes.string.isRequired,
-	budget: PropTypes.bool.isRequired,
-	currentSeason: PropTypes.number.isRequired,
-	editable: PropTypes.bool.isRequired,
-	numConfs: PropTypes.number.isRequired,
-	numPlayoffRounds: PropTypes.number.isRequired,
-	openRosterSpots: PropTypes.number.isRequired,
-	payroll: PropTypes.number,
-	players: PropTypes.arrayOf(PropTypes.object).isRequired,
-	profit: PropTypes.number.isRequired,
-	salaryCap: PropTypes.number.isRequired,
-	season: PropTypes.number.isRequired,
-	showTradeFor: PropTypes.bool.isRequired,
-	t: PropTypes.object.isRequired,
-	tid: PropTypes.number.isRequired,
 };
 
 export default TopStuff;

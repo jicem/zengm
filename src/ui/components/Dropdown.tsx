@@ -1,5 +1,4 @@
 import findLast from "lodash-es/findLast";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import useDropdownOptions, {
@@ -127,12 +126,7 @@ const Select = ({
 	}
 
 	return (
-		<div
-			className="d-flex"
-			style={{
-				marginLeft: 10,
-			}}
-		>
+		<div className="d-flex dropdown-select-wrapper">
 			{buttons}
 			<select
 				value={value}
@@ -152,12 +146,6 @@ const Select = ({
 			</select>
 		</div>
 	);
-};
-
-Select.propTypes = {
-	field: PropTypes.string.isRequired,
-	handleChange: PropTypes.func.isRequired,
-	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 
 type Props = {
@@ -191,7 +179,7 @@ const Dropdown = ({ customOptions, customURL, fields, view }: Props) => {
 	};
 
 	return (
-		<form className="d-flex">
+		<>
 			{keys.map((key, i) => {
 				return (
 					<Select
@@ -203,7 +191,7 @@ const Dropdown = ({ customOptions, customURL, fields, view }: Props) => {
 					/>
 				);
 			})}
-		</form>
+		</>
 	);
 };
 
