@@ -32,8 +32,8 @@ const shootingFormula: RatingFormula = {
 			return [-3, 13];
 		}
 
-		// For 19: [2, 11]
-		return [2, 11 + 5 * (19 - age)];
+		// For 18: [2, 18]
+		return [2, 13 + 5 * (19 - age)];
 	},
 };
 const iqFormula: RatingFormula = {
@@ -66,14 +66,14 @@ const iqFormula: RatingFormula = {
 			return [-3, 9];
 		}
 
-		// For 19: [2, 7]
-		return [2, 7 + 5 * (19 - age)];
+		// For 18: [2, 14]
+		return [2, 9 + 5 * (19 - age)];
 	},
 };
 const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
 	stre: {
 		ageModifier: () => 0,
-		changeLimits: () => [-Infinity, Infinity],
+		changeLimits: () => [0, Infinity],
 	},
 	spd: {
 		ageModifier: (age: number) => {
@@ -173,7 +173,7 @@ const ratingsFormulas: Record<Exclude<RatingKey, "hgt">, RatingFormula> = {
 				return [-3, 13];
 			}
 
-			return [2, 11 + 5 * (19 - age)];
+			return [2, 13 + 5 * (19 - age)];
 		},
 	},
 	ins: shootingFormula,
